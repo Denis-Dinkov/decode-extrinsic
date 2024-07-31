@@ -1,10 +1,37 @@
+var __defProp = Object.defineProperty;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 
-// src/example-1/index.ts
-var example_1_exports = {};
+// src/utils/client.ts
+import {
+  dot
+} from "@polkadot-api/descriptors";
+import { chainSpec as polkadotChainSpec } from "polkadot-api/chains/polkadot";
+import { createClient } from "polkadot-api";
+import { start } from "polkadot-api/smoldot";
+import { getSmProvider } from "polkadot-api/sm-provider";
+import { WebSocketProvider } from "polkadot-api/ws-provider/node";
+import { getObservableClient } from "@polkadot-api/observable-client";
+import { createClient as createSubstrateClient } from "@polkadot-api/substrate-client";
+var createFullClient;
+var init_client = __esm({
+  "src/utils/client.ts"() {
+    "use strict";
+    createFullClient = async () => {
+      const rawClient = createSubstrateClient(WebSocketProvider("wss://polkadot-rpc.publicnode.com"));
+      const client = getObservableClient(rawClient);
+      return { rawClient, client };
+    };
+  }
+});
+
+// src/example-1/decoder.ts
 import {
   Bytes,
   Struct,
@@ -25,9 +52,9 @@ function trailingZeroes(x) {
   }
   return count;
 }
-var $version, $multiAddress, $multiSignature, $mortal, $mortality, $extra, $call, $extrinsic, $opaqueExtrinsic, extrinsic;
-var init_example_1 = __esm({
-  "src/example-1/index.ts"() {
+var $version, $multiAddress, $multiSignature, $mortal, $mortality, $extra, $call, $extrinsic, $opaqueExtrinsic;
+var init_decoder = __esm({
+  "src/example-1/decoder.ts"() {
     "use strict";
     $version = enhanceCodec(
       u8,
@@ -90,26 +117,47 @@ var init_example_1 = __esm({
       version: $version,
       // v4 Body
       body: Struct({
-        // sender: $multiAddress,
+        sender: $multiAddress,
         // signature: $multiSignature,
-        // extra: $extra,
+        extra: $extra,
         call: $call
       })
     });
     $opaqueExtrinsic = enhanceCodec(Bytes(), $extrinsic.enc, $extrinsic.dec);
-    extrinsic = $opaqueExtrinsic.dec("0x280403000b906fdaed9001");
-    console.log(extrinsic);
+  }
+});
+
+// src/example-1/index.ts
+var example_1_exports = {};
+__export(example_1_exports, {
+  default: () => example_1_default
+});
+var example, example_1_default;
+var init_example_1 = __esm({
+  "src/example-1/index.ts"() {
+    "use strict";
+    init_client();
+    init_decoder();
+    example = async () => {
+      const { rawClient, client } = await createFullClient();
+      const historicBlockHash = "0x1847c19c9707baf1f1d0412abc7da57b68abca883d44da46e80870fda29e5e73";
+      const historicBlock = await rawClient.request("chain_getBlock", [historicBlockHash]);
+      const blockExtrinsics = historicBlock.block.extrinsics;
+      const data = $opaqueExtrinsic.dec(blockExtrinsics[1]);
+      console.log("Decoded data", data);
+    };
+    example_1_default = example;
   }
 });
 
 // src/main.ts
 var args = process.argv.slice(2);
-var example = args[0];
+var example2 = args[0];
 var examplesMap = {
   "1": () => Promise.resolve().then(() => (init_example_1(), example_1_exports))
 };
-if (example in examplesMap) {
-  examplesMap[example]().then((module) => {
+if (example2 in examplesMap) {
+  examplesMap[example2]().then((module) => {
     if (module.default) {
       module.default();
     } else {
