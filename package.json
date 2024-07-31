@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@polkadot-api/descriptors": "file:.papi/descriptors",
+    "@polkadot/util-crypto": "^13.0.2",
     "polkadot-api": "0.12.0",
     "scale-ts": "1.6.0",
     "undici-types": "5.26.5"

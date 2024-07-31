@@ -1,5 +1,6 @@
 import { createFullClient } from "@utils/client";
 import { $opaqueExtrinsic } from "./decoder"
+import { encodeAddress } from "@polkadot/util-crypto"
 
 const example = async () => {
   const { rawClient, client } = await createFullClient()
@@ -12,8 +13,11 @@ const example = async () => {
 
   //decode the extrinsic
   const data = $opaqueExtrinsic.dec(blockExtrinsics[1])
-
   console.log('Decoded data', data)
+
+  const ss58Address = encodeAddress(data.body.sender);
+  console.log('Sender', ss58Address)
+
 
 
 };
