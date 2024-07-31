@@ -1,0 +1,14 @@
+{
+  "version": 0,
+  "descriptorPath": ".papi/descriptors",
+  "entries": {
+    "dot": {
+      "chain": "polkadot",
+      "metadata": ".papi/metadata/dot.scale"
+    },
+    "rococo": {
+      "chain": "rococo_v2_2",
+      "metadata": ".papi/metadata/rococo.scale"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "decode",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "@polkadot-api/descriptors": "file:.papi/descriptors",
+    "polkadot-api": "0.12.0",
+    "scale-ts": "1.6.0",
+    "undici-types": "5.26.5"
+  },
+  "scripts": {
+    "postinstall": "papi",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\"",
+    "build": "esbuild --bundle src/main.ts --outdir=build --sourcemap --format=esm --platform=node --packages=external",
+    "start": "npm run build && node --enable-source-maps ./build/main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "20.14.12",
+    "esbuild": "0.23.0",
+    "prettier": "3.3.3",
+    "typescript": "5.5.4"
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "all"
+  }
+}
