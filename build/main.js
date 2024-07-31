@@ -42,6 +42,7 @@ import {
   u16,
   u8
 } from "@polkadot-api/substrate-bindings";
+import { Enum } from "scale-ts";
 function trailingZeroes(x) {
   if (x === 0) return 0;
   let count = 0;
@@ -51,7 +52,7 @@ function trailingZeroes(x) {
   }
   return count;
 }
-var $version, $multiAddress, $multiSignature, $mortal, $mortality, $extra, $call, $accountId, $extrinsic, $opaqueExtrinsic;
+var $version, $multiAddress, $multiSignature, $mortal, $mortality, $extra, $call, $extrinsic, $opaqueExtrinsic;
 var init_decoder = __esm({
   "src/example-1/decoder.ts"() {
     "use strict";
@@ -63,39 +64,18 @@ var init_decoder = __esm({
         signed: !!(value & 1 << 7)
       })
     );
-    $multiAddress = Bytes(32);
-    $multiSignature = createCodec(
-      (value) => {
-        switch (value.type) {
-          case 0:
-            return Uint8Array.from([0, ...Bytes(64).enc(value.signature)]);
-          case 1:
-            return Uint8Array.from([1, ...Bytes(64).enc(value.signature)]);
-          case 2:
-            return Uint8Array.from([2, ...Bytes(65).enc(value.signature)]);
-          default:
-            throw new Error("Invalid signature type");
-        }
-      },
-      createDecoder((input) => {
-        const type = u8.dec(input);
-        let signature;
-        switch (type) {
-          case 0:
-            signature = Bytes(64).dec(input.slice(1));
-            break;
-          case 1:
-            signature = Bytes(64).dec(input.slice(1));
-            break;
-          case 2:
-            signature = Bytes(65).dec(input.slice(1));
-            break;
-          default:
-            throw new Error("Invalid signature type");
-        }
-        return { type, signature };
-      })
-    );
+    $multiAddress = Enum({
+      0: Bytes(32)
+      // FIXME: complete MultiAddress variants
+    });
+    $multiSignature = Enum({
+      0: Bytes(64),
+      // Ed25519
+      1: Bytes(64),
+      // Sr25519
+      2: Bytes(65)
+      // Ecdsa
+    });
     $mortal = enhanceCodec(
       Bytes(2),
       (value) => {
@@ -130,18 +110,20 @@ var init_decoder = __esm({
     $call = Struct({
       module: u8,
       method: u8,
+      // for a balances.transferKeepAlive(dest, value) arguments
       args: Struct({
+        dest: $multiAddress,
         value: compact
       })
     });
-    $accountId = Bytes(32);
     $extrinsic = Struct({
       version: $version,
+      // v4 Body
       body: Struct({
-        sender: $accountId,
+        sender: $multiAddress
         // signature: $multiSignature,
-        extra: $extra,
-        call: $call
+        // extra: $extra,
+        // call: $call,
       })
     });
     $opaqueExtrinsic = enhanceCodec(Bytes(), $extrinsic.enc, $extrinsic.dec);
@@ -153,7 +135,6 @@ var example_1_exports = {};
 __export(example_1_exports, {
   default: () => example_1_default
 });
-import { encodeAddress } from "@polkadot/util-crypto";
 var example, example_1_default;
 var init_example_1 = __esm({
   "src/example-1/index.ts"() {
@@ -165,10 +146,10 @@ var init_example_1 = __esm({
       const historicBlockHash = "0x1847c19c9707baf1f1d0412abc7da57b68abca883d44da46e80870fda29e5e73";
       const historicBlock = await rawClient.request("chain_getBlock", [historicBlockHash]);
       const blockExtrinsics = historicBlock.block.extrinsics;
-      const data = $opaqueExtrinsic.dec(blockExtrinsics[1]);
-      console.log("Decoded data", data);
-      const ss58Address = encodeAddress(data.body.sender);
-      console.log("Sender", ss58Address);
+      blockExtrinsics.forEach((extrinsic) => {
+        const data = $opaqueExtrinsic.dec(extrinsic);
+        console.log("Decoded data", data);
+      });
     };
     example_1_default = example;
   }

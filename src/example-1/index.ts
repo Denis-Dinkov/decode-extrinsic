@@ -12,13 +12,10 @@ const example = async () => {
   const blockExtrinsics = historicBlock.block.extrinsics
 
   //decode the extrinsic
-  const data = $opaqueExtrinsic.dec(blockExtrinsics[1])
-  console.log('Decoded data:', data)
-
-  const ss58Address = encodeAddress(data.body.sender);
-  console.log('Sender:', ss58Address)
-
-
+  blockExtrinsics.forEach((extrinsic) => {
+    const data = $opaqueExtrinsic.dec(extrinsic)
+    console.log('Decoded data', data)
+  })
 
 };
 
