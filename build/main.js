@@ -139,6 +139,7 @@ var init_decoder = __esm({
       version: $version,
       body: Struct({
         sender: $accountId,
+        // signature: $multiSignature,
         extra: $extra,
         call: $call
       })

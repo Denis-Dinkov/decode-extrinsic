@@ -13,10 +13,10 @@ const example = async () => {
 
   //decode the extrinsic
   const data = $opaqueExtrinsic.dec(blockExtrinsics[1])
-  console.log('Decoded data', data)
+  console.log('Decoded data:', data)
 
   const ss58Address = encodeAddress(data.body.sender);
-  console.log('Sender', ss58Address)
+  console.log('Sender:', ss58Address)
 
 
 

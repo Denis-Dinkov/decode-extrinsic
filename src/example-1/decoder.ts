@@ -21,7 +21,6 @@ import {
   u32,
   u8,
 } from "@polkadot-api/substrate-bindings"
-import { encodeAddress } from "@polkadot/util-crypto"
 
 
 import { Enum } from "scale-ts"
@@ -138,6 +137,7 @@ const $extrinsic = Struct({
   version: $version,
   body: Struct({
     sender: $accountId,
+    // signature: $multiSignature,
     extra: $extra,
     call: $call,
   }),
